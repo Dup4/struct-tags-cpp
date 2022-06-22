@@ -9,13 +9,12 @@
 
 #define STRUCT_TAGS_STR(x) #x
 
-#define STRUCT_TAGS_DECLARE_FIELD_BEGIN(Struct)                       \
-private:                                                              \
-    using _Struct = Struct;                                           \
-    friend class ::struct_tags::StructTags<_Struct>;                  \
-    friend class ::struct_tags::has_struct_tags_field_tuple<_Struct>; \
-                                                                      \
-    auto __StructTags_FieldTuple() {                                  \
+#define STRUCT_TAGS_DECLARE_FIELD_BEGIN(Struct)                      \
+private:                                                             \
+    friend class ::struct_tags::StructTags<Struct>;                  \
+    friend class ::struct_tags::has_struct_tags_field_tuple<Struct>; \
+                                                                     \
+    auto __StructTags_FieldTuple() {                                 \
         static auto tuple = std::make_tuple(
 
 #define STRUCT_TAGS_DECLARE_FIELD(field, ...) \
