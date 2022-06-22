@@ -11,7 +11,7 @@ protected:
 
 struct A {
     int a{0};
-    char c;
+    char c{'a'};
 
     STRUCT_TAGS_BEGIN
     STRUCT_TAGS_DECLARE_FIELD(a)
@@ -26,13 +26,15 @@ TEST_F(StructTagsTest, struct_tags_test) {
 
     a.FieldByIndex(0, [&a](auto&& field) {
         EXPECT_EQ(field.Name(), "a");
-        EXPECT_EQ(*field.Value(), 0);
+        EXPECT_EQ(field.Value(), 0);
 
-        *field.Value() = 1;
+        field.Value() = 1;
         EXPECT_EQ(a.a, 1);
+    });
 
-        field.SetValue(2);
-        EXPECT_EQ(a.a, 2);
+    a.FieldByIndex(1, [](auto&& field) {
+        EXPECT_EQ(field.Name(), "c");
+        EXPECT_EQ(field.Value(), 'a');
     });
 }
 

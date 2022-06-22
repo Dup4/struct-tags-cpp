@@ -17,17 +17,13 @@ public:
         return name_;
     }
 
-    T*& Value() {
-        return value_;
+    T& Value() {
+        return *value_;
     }
 
-    void SetValue(T&& value) {
-        *value_ = std::forward<T>(value);
-    }
-
-    std::string Tag(const std::string& key) const {
+    std::optional<std::string> Tag(const std::string& key) const {
         if (tags_.count(key) == 0) {
-            return "";
+            return std::nullopt;
         }
 
         return tags_.at(key);
