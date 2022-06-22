@@ -51,16 +51,20 @@ public:                                                                         
                                                                                                  \
 private:
 
-#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_BEGIN(Struct)               \
-    namespace struct_tags {                                            \
-    template <>                                                        \
-    inline auto __StructTagsExternal_FieldTuple<Struct>(Struct && s) { \
-        using _Struct = Struct;                                        \
+template <typename T>
+inline auto __StructTagsExternal_FieldTuple([[maybe_unused]] T&& s) {
+    return std::make_tuple();
+}
+
+#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_BEGIN(Struct)     \
+    /* NOLINTNEXTLINE(bugprone-macro-parentheses) */         \
+    inline auto __StructTagsExternal_FieldTuple(Struct* s) { \
+        using _Struct = Struct;                              \
         static auto tuple = std::make_tuple(
 
-#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...)                        \
-    ::struct_tags::Field<std::decay_t<decltype(s.*(&_Struct::StructField))>>{ \
-            STRUCT_TAGS_STR(field), &s.*(&_Struct::StructField), std::map<std::string, std::string>{__VA_ARGS__}},
+#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...)                   \
+    ::struct_tags::Field<std::decay_t<decltype(s->*(&_Struct::field))>>{ \
+            STRUCT_TAGS_STR(field), &(s->*(&_Struct::field)), std::map<std::string, std::string>{__VA_ARGS__}},
 
 #define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_END               \
     ::struct_tags::Field<char> {                             \
@@ -68,7 +72,6 @@ private:
     });                                                      \
                                                              \
     return tuple;                                            \
-    }                                                        \
     }
 
 #endif  // STRUCT_TAGS_INTERNAL_MACROS_H

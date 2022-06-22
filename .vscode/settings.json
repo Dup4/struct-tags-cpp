@@ -28,6 +28,7 @@
         "codecov",
         "declval",
         "GCOVR",
+        "NOLINTNEXTLINE",
         "struct"
     ]
 }

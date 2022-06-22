@@ -3,8 +3,10 @@
 
 #include <cstddef>
 #include <tuple>
+#include <type_traits>
 
 #include "../types_check/index.h"
+#include "./macros.h"
 #include "./visit_tuple.h"
 
 namespace struct_tags {
@@ -21,41 +23,44 @@ public:
     StructTags& operator=(StructTags&&) = default;
 
     constexpr size_t NumField() {
-        if constexpr (has_struct_tags_field_tuple_v<T>) {
-            return std::tuple_size_v<decltype(value_->__StructTags_FieldTuple())> - 1;
-        } else {
-            static_assert(false_v<T>, "T does not have __StructTags_FieldTuple()");
-        }
+        auto field_tuple = getFieldTuple();
+        return std::tuple_size_v<std::decay_t<decltype(field_tuple)>> - 1;
     }
 
     template <typename Func>
     constexpr void FieldByIndex(size_t ix, Func&& f) {
-        if constexpr (has_struct_tags_field_tuple_v<T>) {
-            ::struct_tags::VisitTupleByIndex(ix, value_->__StructTags_FieldTuple(), std::forward<Func>(f));
-        } else {
-            static_assert(false_v<T>, "T does not have __StructTags_FieldTuple()");
-        }
+        auto field_tuple = getFieldTuple();
+        ::struct_tags::VisitTupleByIndex(
+                ix, std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
     }
 
     template <typename Func>
     constexpr void FieldByName(const char* name, Func&& f) {
-        if constexpr (has_struct_tags_field_tuple_v<T>) {
-            ::struct_tags::VisitTupleByName(name, value_->__StructTags_FieldTuple(), std::forward<Func>(f));
-        } else {
-            static_assert(false_v<T>, "T does not have __StructTags_FieldTuple()");
-        }
+        auto field_tuple = getFieldTuple();
+        ::struct_tags::VisitTupleByName(
+                name, std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
     }
 
     template <typename Func>
     constexpr void FieldForEach(Func&& f) {
-        if constexpr (has_struct_tags_field_tuple_v<T>) {
-            ::struct_tags::VisitTupleForEach(value_->__StructTags_FieldTuple(), std::forward<Func>(f));
-        } else {
-            static_assert(false_v<T>, "T does not have __StructTags_FieldTuple()");
-        }
+        auto field_tuple = getFieldTuple();
+        ::struct_tags::VisitTupleForEach(
+                std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
     }
 
 private:
+    constexpr auto getFieldTuple() {
+        if constexpr (has_struct_tags_field_tuple_v<T>) {
+            return value_->__StructTags_FieldTuple();
+        } else {
+            auto field_tuple = __StructTagsExternal_FieldTuple(value_);
+            static_assert(std::tuple_size_v<std::decay_t<decltype(field_tuple)>> != 0,
+                    "T does not have __StructTags_FieldTuple() member function or __StructTagsExternal_FieldTuple() impl");
+
+            return field_tuple;
+        }
+    }
+
     T* value_;
 };
 
