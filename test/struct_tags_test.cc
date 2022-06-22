@@ -22,7 +22,7 @@ struct A {
 TEST_F(StructTagsTest, struct_tags_test) {
     A a;
 
-    EXPECT_EQ(a.NumField(), 2);
+    static_assert(a.NumField() == 2);
 
     a.FieldByIndex(0, [&a](auto&& field) {
         EXPECT_EQ(field.Name(), "a");

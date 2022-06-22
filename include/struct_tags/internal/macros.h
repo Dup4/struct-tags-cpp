@@ -31,7 +31,7 @@ public:                                                                         
     }                                                                                        \
                                                                                              \
     template <typename Func>                                                                 \
-    void FieldByIndex(size_t ix, Func&& f) {                                                 \
+    constexpr void FieldByIndex(size_t ix, Func&& f) {                                       \
         ::struct_tags::VisitTupleByIndex(ix, structTagsFieldTuple(), std::forward<Func>(f)); \
     }                                                                                        \
                                                                                              \
