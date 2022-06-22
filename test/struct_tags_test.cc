@@ -16,11 +16,11 @@ struct A {
     char c{'a'};
     uint flag{0};
 
-    STRUCT_TAGS_FIELD_BEGIN
+    STRUCT_TAGS_DECLARE_FIELD_BEGIN
     STRUCT_TAGS_DECLARE_FIELD(a, {"json", "_a"})
     STRUCT_TAGS_DECLARE_FIELD(c, {"json", "_c"})
     STRUCT_TAGS_DECLARE_FIELD(flag, {"json", "_flag"})
-    STRUCT_TAGS_FIELD_END
+    STRUCT_TAGS_DECLARE_FIELD_END
 };
 
 TEST_F(StructTagsTest, struct_tags_test) {
