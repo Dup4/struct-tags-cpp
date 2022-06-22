@@ -14,8 +14,8 @@ struct A {
     char c{'a'};
 
     STRUCT_TAGS_BEGIN
-    STRUCT_TAGS_DECLARE_FIELD(a)
-    STRUCT_TAGS_DECLARE_FIELD(c)
+    STRUCT_TAGS_DECLARE_FIELD(a, {"json", "_a"})
+    STRUCT_TAGS_DECLARE_FIELD(c, {"json", "_c"})
     STRUCT_TAGS_END
 };
 
@@ -27,6 +27,7 @@ TEST_F(StructTagsTest, struct_tags_test) {
     a.FieldByIndex(0, [&a](auto&& field) {
         EXPECT_EQ(field.Name(), "a");
         EXPECT_EQ(field.Value(), 0);
+        EXPECT_EQ(field.Tag("json").value(), "_a");
 
         field.Value() = 1;
         EXPECT_EQ(a.a, 1);
@@ -37,6 +38,7 @@ TEST_F(StructTagsTest, struct_tags_test) {
     a.FieldByIndex(1, [](auto&& field) {
         EXPECT_EQ(field.Name(), "c");
         EXPECT_EQ(field.Value(), 'a');
+        EXPECT_EQ(field.Tag("json").value(), "_c");
 
         field.Value() = 'b';
     });
