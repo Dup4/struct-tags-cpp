@@ -55,7 +55,7 @@ private:
         } else {
             auto field_tuple = __StructTagsExternal_FieldTuple(value_);
             static_assert(std::tuple_size_v<std::decay_t<decltype(field_tuple)>> != 0,
-                    "T does not have __StructTags_FieldTuple() member function or __StructTagsExternal_FieldTuple() impl");
+                    "T does not have __StructTags_FieldTuple() member function or __StructTagsExternal_FieldTuple() external function");
 
             return field_tuple;
         }
