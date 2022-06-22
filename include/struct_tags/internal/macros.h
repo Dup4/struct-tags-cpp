@@ -61,6 +61,7 @@ inline auto __StructTagsExternal_FieldTuple([[maybe_unused]] T&& s) {
         using _Struct = Struct;                              \
         static auto tuple = std::make_tuple(
 
+// https://stackoverflow.com/questions/2402579/function-pointer-to-member-function
 #define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...)                   \
     ::struct_tags::Field<std::decay_t<decltype(s->*(&_Struct::field))>>{ \
             STRUCT_TAGS_STR(field), &(s->*(&_Struct::field)), std::map<std::string, std::string>{__VA_ARGS__}},
