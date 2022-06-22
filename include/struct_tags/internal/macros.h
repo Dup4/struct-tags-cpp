@@ -9,7 +9,7 @@
 
 #define STRUCT_TAGS_STR(x) #x
 
-#define STRUCT_TAGS_BEGIN         \
+#define STRUCT_TAGS_FIELD_BEGIN   \
 private:                          \
     auto structTagsFieldTuple() { \
         static auto tuple = std::make_tuple(
@@ -18,7 +18,7 @@ private:                          \
     ::struct_tags::Field<decltype(field)>{    \
             STRUCT_TAGS_STR(field), &field, std::map<std::string, std::string>{__VA_ARGS__}},
 
-#define STRUCT_TAGS_END                                                                       \
+#define STRUCT_TAGS_FIELD_END                                                                 \
 ::struct_tags::Field<char> \
         {::struct_tags::Constant::kStructTagsEndFlag, nullptr});                              \
                                                                                               \
