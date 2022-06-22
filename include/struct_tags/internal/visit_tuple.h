@@ -36,6 +36,17 @@ template <std::size_t I = 0, typename Func, typename... Tp>
     VisitTupleByName<I + 1, Func, Tp...>(name, std::forward<std::decay_t<decltype(t)>>(t), std::forward<Func>(f));
 }
 
+template <std::size_t I = 0, typename Func, typename... Tp>
+inline typename std::enable_if<I == sizeof...(Tp) - 1, void>::type VisitTupleForEach(std::tuple<Tp...>&&, Func&&) {}
+
+template <std::size_t I = 0, typename Func, typename... Tp>
+        inline typename std::enable_if <
+        I<sizeof...(Tp) - 1, void>::type VisitTupleForEach(std::tuple<Tp...>&& t, Func&& f) {
+    f(std::get<I>(std::forward<std::decay_t<decltype(t)>>(t)));
+
+    VisitTupleForEach<I + 1, Func, Tp...>(std::forward<std::decay_t<decltype(t)>>(t), std::forward<Func>(f));
+}
+
 }  // namespace struct_tags
 
 #endif  // STRUCT_TAGS_INTERNAL_VISIT_TUPLE_H
