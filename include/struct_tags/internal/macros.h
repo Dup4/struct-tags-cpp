@@ -43,6 +43,8 @@ public:                                                                         
     template <typename Func>                                                                  \
     constexpr void FieldForEach(Func&& f) {                                                   \
         ::struct_tags::VisitTupleForEach(structTagsFieldTuple(), std::forward<Func>(f));      \
-    }
+    }                                                                                         \
+                                                                                              \
+private:
 
 #endif  // STRUCT_TAGS_INTERNAL_MACROS_H
