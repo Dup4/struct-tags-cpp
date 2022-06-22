@@ -1,6 +1,9 @@
 #ifndef STRUCT_TAGS_INTERNAL_VISIT_TUPLE_H
 #define STRUCT_TAGS_INTERNAL_VISIT_TUPLE_H
 
+// https://stackoverflow.com/questions/8194227/how-to-get-the-i-th-element-from-an-stdtuple-when-i-isnt-know-at-compile-time?noredirect=1&lq=1
+// https://stackoverflow.com/questions/28997271/c11-way-to-index-tuple-at-runtime-without-using-switch
+
 #include <tuple>
 #include <type_traits>
 
