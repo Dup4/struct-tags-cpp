@@ -32,10 +32,26 @@ TEST_F(StructTagsTest, struct_tags_test) {
         EXPECT_EQ(a.a, 1);
     });
 
+    EXPECT_EQ(a.a, 1);
+
     a.FieldByIndex(1, [](auto&& field) {
         EXPECT_EQ(field.Name(), "c");
         EXPECT_EQ(field.Value(), 'a');
+
+        field.Value() = 'b';
     });
+
+    EXPECT_EQ(a.c, 'b');
+
+    a.FieldByName("a", [&a](auto&& field) {
+        EXPECT_EQ(field.Name(), "a");
+        EXPECT_EQ(field.Value(), 1);
+
+        field.Value() = 2;
+        EXPECT_EQ(a.a, 2);
+    });
+
+    EXPECT_EQ(a.a, 2);
 }
 
 }  // namespace struct_tags

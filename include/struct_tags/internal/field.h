@@ -13,7 +13,7 @@ public:
     Field(const char* name, T* value, std::map<std::string, std::string> tags = {})
             : name_(name), value_(value), tags_(tags) {}
 
-    std::string Name() const {
+    constexpr const char* Name() const {
         return name_;
     }
 
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    std::string name_;
+    const char* name_;
     T* value_;
     std::map<std::string, std::string> tags_{};
 };
