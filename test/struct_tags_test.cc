@@ -32,6 +32,7 @@ TEST_F(StructTagsTest, struct_tags_test) {
         EXPECT_EQ(field.Name(), "a");
         EXPECT_EQ(field.Value(), 0);
         EXPECT_EQ(field.Tag("json").value(), "_a");
+        EXPECT_EQ(field.Tags().count("json"), 1);
 
         field.Value() = 1;
         EXPECT_EQ(a.a, 1);
@@ -43,6 +44,7 @@ TEST_F(StructTagsTest, struct_tags_test) {
         EXPECT_EQ(field.Name(), "c");
         EXPECT_EQ(field.Value(), 'a');
         EXPECT_EQ(field.Tag("json").value(), "_c");
+        EXPECT_EQ(field.Tags().count("json"), 1);
 
         field.Value() = 'b';
     });

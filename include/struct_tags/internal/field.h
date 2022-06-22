@@ -29,7 +29,7 @@ public:
         return tags_.at(key);
     }
 
-    std::map<std::string, std::string> Tags() const {
+    const std::map<std::string, std::string>& Tags() const {
         return tags_;
     }
 
