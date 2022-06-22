@@ -22,6 +22,10 @@ public:
     StructTags& operator=(const StructTags&) = default;
     StructTags& operator=(StructTags&&) = default;
 
+    T& Interface() {
+        return *value_;
+    }
+
     constexpr size_t NumField() {
         auto field_tuple = getFieldTuple();
         return std::tuple_size_v<std::decay_t<decltype(field_tuple)>> - 1;

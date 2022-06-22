@@ -158,6 +158,9 @@ TEST_F(StructTagsTest, struct_tags_external_test) {
 
     EXPECT_EQ(a.a, 3);
     EXPECT_EQ(a.c, 'c');
+
+    s.Interface().a = 4;
+    EXPECT_EQ(a.a, 4);
 }
 
 TEST_F(StructTagsTest, struct_tags_tags_external_declare_test) {
@@ -223,6 +226,9 @@ TEST_F(StructTagsTest, struct_tags_tags_external_declare_test) {
 
     EXPECT_EQ(a.a, 3);
     EXPECT_EQ(a.c, 'c');
+
+    s.Interface().a = 4;
+    EXPECT_EQ(a.a, 4);
 }
 
 }  // namespace struct_tags
