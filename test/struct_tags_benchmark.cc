@@ -60,6 +60,43 @@ struct A {
     STRUCT_TAGS_DECLARE_FIELD_END
 };
 
+static void BenchmarkStructTagsFieldForEachWithoutReflect(benchmark::State& state) {
+    for (auto _ : state) {
+        A a;
+
+        a.a = 1;
+        a.b = 1;
+        a.c = 1;
+        a.d = 1;
+        a.e = 1;
+        a.f = 1;
+        a.g = 1;
+        a.h = 1;
+        a.i = 1;
+        a.j = 1;
+        a.k = 1;
+        a.l = 1;
+        a.m = 1;
+        a.n = 1;
+        a.o = 1;
+        a.p = 1;
+        a.q = 1;
+        a.r = 1;
+        a.s = 1;
+        a.t = 1;
+        a.u = 1;
+        a.v = 1;
+        a.w = 1;
+        a.x = 1;
+        a.y = 1;
+        a.z = 1;
+
+        assert(a.a == 1);
+    }
+}
+
+BENCHMARK(BenchmarkStructTagsFieldForEachWithoutReflect);
+
 static void BenchmarkStructTagsFieldForEach(benchmark::State& state) {
     for (auto _ : state) {
         A a;
