@@ -1,6 +1,7 @@
 #ifndef STRUCT_TAGS_INTERNAL_MACROS_H
 #define STRUCT_TAGS_INTERNAL_MACROS_H
 
+#include <cstring>
 #include <map>
 #include <string>
 #include <utility>
