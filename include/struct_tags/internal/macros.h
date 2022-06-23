@@ -9,6 +9,9 @@
 
 #define STRUCT_TAGS_STR(x) #x
 
+// can't use `static auto tuple = std::make_tuple();
+// because it't not constexpr
+
 #define STRUCT_TAGS_DECLARE_FIELD_BEGIN(Struct)                      \
 private:                                                             \
     friend class ::struct_tags::StructTags<Struct>;                  \
