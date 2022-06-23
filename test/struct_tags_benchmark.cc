@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 
+#include "struct_tags/internal/struct_tags.h"
 #include "struct_tags/struct_tags.h"
 
 struct A {
@@ -101,7 +102,9 @@ static void BenchmarkStructTagsNumField(benchmark::State& state) {
     for (auto _ : state) {
         A a;
 
-        a.NumField();
+        auto s = struct_tags::NewStructTags(&a);
+
+        s.NumField();
     }
 }
 
@@ -111,7 +114,9 @@ static void BenchmarkStructTagsFieldForEach(benchmark::State& state) {
     for (auto _ : state) {
         A a;
 
-        a.FieldForEach([](auto&& field) {
+        auto s = struct_tags::NewStructTags(&a);
+
+        s.FieldForEach([](auto&& field) {
             field.Value() = 1;
         });
 
@@ -125,7 +130,9 @@ static void BenchmarkStructTagsFieldByIndex(benchmark::State& state) {
     for (auto _ : state) {
         A a;
 
-        a.FieldByIndex(25, [](auto&& field) {
+        auto s = struct_tags::NewStructTags(&a);
+
+        s.FieldByIndex(25, [](auto&& field) {
             field.Value() = 1;
         });
 
@@ -139,7 +146,9 @@ static void BenchmarkStructTagsFieldByName(benchmark::State& state) {
     for (auto _ : state) {
         A a;
 
-        a.FieldByName("z", [](auto&& field) {
+        auto s = struct_tags::NewStructTags(&a);
+
+        s.FieldByName("z", [](auto&& field) {
             field.Value() = 1;
         });
 
@@ -153,8 +162,11 @@ static void BenchmarkStructTagsVisitEachFieldByFieldByIndex(benchmark::State& st
     for (auto _ : state) {
         A a;
 
-        for (size_t i = 0; i < a.NumField(); i++) {
-            a.FieldByIndex(i, [](auto&& field) {
+        auto s = struct_tags::NewStructTags(&a);
+
+        size_t n = s.NumField();
+        for (size_t i = 0; i < n; i++) {
+            s.FieldByIndex(i, [](auto&& field) {
                 field.Value() = 1;
             });
         }

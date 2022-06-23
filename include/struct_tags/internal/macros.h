@@ -36,41 +36,13 @@ private:                                                                        
         }                                                                                      \
     }
 
-#define STRUCT_TAGS_DECLARE_END                                                                            \
-                                                                                                           \
-    return size;                                                                                           \
-    }                                                                                                      \
-                                                                                                           \
-public:                                                                                                    \
-    size_t NumField() {                                                                                    \
-        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().Build();                    \
-        return __StructTags_Entrance(this, options, []([[maybe_unused]] auto&& field) {});                 \
-    }                                                                                                      \
-                                                                                                           \
-    template <typename Func>                                                                               \
-    void FieldByIndex(size_t ix, Func&& f) {                                                               \
-        static auto options =                                                                              \
-                ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByIndex().WithIndex(ix).Build(); \
-        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
-    }                                                                                                      \
-                                                                                                           \
-    template <typename Func>                                                                               \
-    void FieldByName(const char* name, Func&& f) {                                                         \
-        static auto options =                                                                              \
-                ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByName().WithName(name).Build(); \
-        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
-    }                                                                                                      \
-                                                                                                           \
-    template <typename Func>                                                                               \
-    void FieldForEach(Func&& f) {                                                                          \
-        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().WithVisitForEach().Build(); \
-        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
-    }                                                                                                      \
-                                                                                                           \
-private:
+#define STRUCT_TAGS_DECLARE_END \
+                                \
+    return size;                \
+    }
 
 #define STRUCT_TAGS_EXTERNAL_DECLARE_BEGIN(Struct)                                                               \
-    template <typename Func> /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                                    \
+    template <typename Func>                                                                                     \
     inline size_t __StructTagsExternal_Entrance(Struct* s, const ::struct_tags::Options& options, Func&& func) { \
         using _Struct = Struct;                                                                                  \
         size_t size = 0;
