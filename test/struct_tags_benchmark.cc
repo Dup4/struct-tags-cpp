@@ -97,6 +97,16 @@ static void BenchmarkStructTagsFieldForEachWithoutReflect(benchmark::State& stat
 
 BENCHMARK(BenchmarkStructTagsFieldForEachWithoutReflect);
 
+static void BenchmarkStructTagsNumField(benchmark::State& state) {
+    for (auto _ : state) {
+        A a;
+
+        a.NumField();
+    }
+}
+
+BENCHMARK(BenchmarkStructTagsNumField);
+
 static void BenchmarkStructTagsFieldForEach(benchmark::State& state) {
     for (auto _ : state) {
         A a;
