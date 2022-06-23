@@ -15,7 +15,7 @@ private:                                                             \
     friend class ::struct_tags::has_struct_tags_field_tuple<Struct>; \
                                                                      \
     auto __StructTags_FieldTuple() {                                 \
-        static auto tuple = std::make_tuple(
+        return std::make_tuple(
 
 #define STRUCT_TAGS_DECLARE_FIELD(field, ...) \
     ::struct_tags::Field<decltype(field)>{    \
@@ -24,8 +24,6 @@ private:                                                             \
 #define STRUCT_TAGS_DECLARE_FIELD_END                                                            \
 ::struct_tags::Field<char> \
         {::struct_tags::Constant::kStructTagsEndFlag, nullptr});                                 \
-                                                                                                 \
-    return tuple;                                                                                \
     }                                                                                            \
                                                                                                  \
 public:                                                                                          \
@@ -59,7 +57,7 @@ inline auto __StructTagsExternal_FieldTuple([[maybe_unused]] T&& s) {
     /* NOLINTNEXTLINE(bugprone-macro-parentheses) */         \
     inline auto __StructTagsExternal_FieldTuple(Struct* s) { \
         using _Struct = Struct;                              \
-        static auto tuple = std::make_tuple(
+        return std::make_tuple(
 
 // https://stackoverflow.com/questions/2402579/function-pointer-to-member-function
 #define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...)                   \
@@ -70,8 +68,6 @@ inline auto __StructTagsExternal_FieldTuple([[maybe_unused]] T&& s) {
     ::struct_tags::Field<char> {                             \
         ::struct_tags::Constant::kStructTagsEndFlag, nullptr \
     });                                                      \
-                                                             \
-    return tuple;                                            \
     }
 
 #endif  // STRUCT_TAGS_INTERNAL_MACROS_H
