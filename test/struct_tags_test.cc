@@ -33,7 +33,7 @@ protected:
     virtual void SetUp() override {}
 };
 
-TEST_F(StructTagsTest, struct_tags_external_test) {
+TEST_F(StructTagsTest, struct_tags_test) {
     A a;
 
     auto s = NewStructTags(&a);
@@ -101,7 +101,37 @@ TEST_F(StructTagsTest, struct_tags_external_test) {
     EXPECT_EQ(a.a, 4);
 }
 
-TEST_F(StructTagsTest, struct_tags_tags_external_declare_test) {
+TEST_F(StructTagsTest, struct_tags_const_test) {
+    const A a = A();
+
+    auto s = NewStructTags(&a);
+
+    // can not use `static_assert(s.NumField() == 3);`
+    EXPECT_EQ(s.NumField(), 3);
+
+    s.FieldByIndex(0, [](auto&& field) {
+        EXPECT_EQ(field.Name(), "a");
+        EXPECT_EQ(field.Value(), 0);
+        EXPECT_EQ(field.Tag("json").value(), "_a");
+        EXPECT_EQ(field.Tags().count("json"), 1);
+    });
+
+    s.FieldForEach(struct_tags::Overload(
+            [](struct_tags::Field<const int>&& field) {
+                EXPECT_EQ(field.Name(), "a");
+                EXPECT_EQ(field.Value(), 0);
+            },
+            [](struct_tags::Field<const char>&& field) {
+                EXPECT_EQ(field.Name(), "c");
+                EXPECT_EQ(field.Value(), 'a');
+            },
+            [](auto&& field) {
+                EXPECT_EQ(field.Name(), "flag");
+                EXPECT_EQ(field.Value(), 0);
+            }));
+}
+
+TEST_F(StructTagsTest, struct_tags_tags_external_test) {
     B a;
 
     auto s = NewStructTags(&a);
