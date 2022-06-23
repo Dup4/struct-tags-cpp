@@ -6,8 +6,7 @@
 #include <type_traits>
 
 #include "../types_check/index.h"
-#include "./macros.h"
-#include "./visit_tuple.h"
+#include "./options.h"
 
 namespace struct_tags {
 
@@ -26,42 +25,39 @@ public:
         return *value_;
     }
 
-    constexpr size_t NumField() {
-        auto field_tuple = getFieldTuple();
-        return std::tuple_size_v<std::decay_t<decltype(field_tuple)>> - 1;
+    size_t NumField() {
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().Build();
+        return entrance(options, []([[maybe_unused]] auto&& field) {});
     }
 
     template <typename Func>
-    constexpr void FieldByIndex(size_t ix, Func&& f) {
-        auto field_tuple = getFieldTuple();
-        ::struct_tags::VisitTupleByIndex(
-                ix, std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
+    void FieldByIndex(size_t ix, Func&& f) {
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByIndex().WithIndex(ix).Build();
+        entrance(options, std::forward<Func>(f));
     }
 
     template <typename Func>
-    constexpr void FieldByName(const char* name, Func&& f) {
-        auto field_tuple = getFieldTuple();
-        ::struct_tags::VisitTupleByName(
-                name, std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
+    void FieldByName(const char* name, Func&& f) {
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByName().WithName(name).Build();
+        entrance(options, std::forward<Func>(f));
     }
 
     template <typename Func>
-    constexpr void FieldForEach(Func&& f) {
-        auto field_tuple = getFieldTuple();
-        ::struct_tags::VisitTupleForEach(
-                std::forward<std::decay_t<decltype(field_tuple)>>(field_tuple), std::forward<Func>(f));
+    void FieldForEach(Func&& f) {
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().WithVisitForEach().Build();
+        entrance(options, std::forward<Func>(f));
     }
 
 private:
-    constexpr auto getFieldTuple() {
-        if constexpr (has_struct_tags_field_tuple_v<T>) {
-            return value_->__StructTags_FieldTuple();
+    template <typename Func>
+    size_t entrance(const Options& options, Func&& func) {
+        if constexpr (has_struct_tags_entrance_v<T>) {
+            return T::__StructTags_Entrance(value_, options, std::forward<Func>(func));
+        } else if constexpr (has_struct_tags_external_entrance_v<T>) {
+            return __StructTagsExternal_Entrance(value_, options, std::forward<Func>(func));
         } else {
-            auto field_tuple = __StructTagsExternal_FieldTuple(value_);
-            static_assert(std::tuple_size_v<std::decay_t<decltype(field_tuple)>> != 0,
-                    "T does not have __StructTags_FieldTuple() member function or __StructTagsExternal_FieldTuple() external function");
-
-            return field_tuple;
+            static_assert(false_v<T>,
+                    "T does not have T::__StructTags_Entrance() member function or __StructTagsExternal_Entrance() external function");
         }
     }
 

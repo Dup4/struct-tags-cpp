@@ -17,7 +17,7 @@ benchmark: clean_test run_benchmark
 
 build_tests:
 	cmake -S. -Bbuild \
-	-DCMAKE_BUILD_TYPE=Debug \
+	-DCMAKE_BUILD_TYPE=Release \
 	-DBENCHMARK_ENABLE_TESTING=OFF \
 	-DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
 	-Dstruct_tags_build_tests=ON

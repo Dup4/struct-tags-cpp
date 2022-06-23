@@ -7,11 +7,11 @@ struct A {
     char c{'a'};
     uint flag{0};
 
-    STRUCT_TAGS_DECLARE_FIELD_BEGIN(A)
+    STRUCT_TAGS_DECLARE_BEGIN(A)
     STRUCT_TAGS_DECLARE_FIELD(a, {"json", "_a"})
     STRUCT_TAGS_DECLARE_FIELD(c, {"json", "_c"})
     STRUCT_TAGS_DECLARE_FIELD(flag, {"json", "_flag"})
-    STRUCT_TAGS_DECLARE_FIELD_END
+    STRUCT_TAGS_DECLARE_END
 };
 
 struct B {
@@ -20,11 +20,11 @@ struct B {
     uint flag{0};
 };
 
-STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_BEGIN(B)
+STRUCT_TAGS_EXTERNAL_DECLARE_BEGIN(B)
 STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(a, {"json", "_a"})
 STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(c, {"json", "_c"})
 STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(flag, {"json", "_flag"})
-STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_END
+STRUCT_TAGS_EXTERNAL_DECLARE_END
 
 namespace struct_tags {
 
@@ -36,7 +36,7 @@ protected:
 TEST_F(StructTagsTest, struct_tags_test) {
     A a;
 
-    static_assert(a.NumField() == 3);
+    EXPECT_EQ(a.NumField(), 3);
 
     a.FieldByIndex(0, [&a](auto&& field) {
         EXPECT_EQ(field.Name(), "a");

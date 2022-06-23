@@ -1,76 +1,83 @@
 #ifndef STRUCT_TAGS_INTERNAL_MACROS_H
 #define STRUCT_TAGS_INTERNAL_MACROS_H
 
+#include <map>
+#include <string>
 #include <utility>
 
-#include "./constant.h"
 #include "./field.h"
-#include "./visit_tuple.h"
 
 #define STRUCT_TAGS_STR(x) #x
 
-// can't use `static auto tuple = std::make_tuple();
-// because it't not constexpr
-
-#define STRUCT_TAGS_DECLARE_FIELD_BEGIN(Struct)                      \
-private:                                                             \
-    friend class ::struct_tags::StructTags<Struct>;                  \
-    friend class ::struct_tags::has_struct_tags_field_tuple<Struct>; \
-                                                                     \
-    auto __StructTags_FieldTuple() {                                 \
-        return std::make_tuple(
-
-#define STRUCT_TAGS_DECLARE_FIELD(field, ...) \
-    ::struct_tags::Field<decltype(field)>{    \
-            STRUCT_TAGS_STR(field), &field, std::map<std::string, std::string>{__VA_ARGS__}},
-
-#define STRUCT_TAGS_DECLARE_FIELD_END                                                            \
-::struct_tags::Field<char> \
-        {::struct_tags::Constant::kStructTagsEndFlag, nullptr});                                 \
-    }                                                                                            \
-                                                                                                 \
-public:                                                                                          \
-    constexpr size_t NumField() {                                                                \
-        return std::tuple_size_v<decltype(__StructTags_FieldTuple())> - 1;                       \
-    }                                                                                            \
-                                                                                                 \
-    template <typename Func>                                                                     \
-    constexpr void FieldByIndex(size_t ix, Func&& f) {                                           \
-        ::struct_tags::VisitTupleByIndex(ix, __StructTags_FieldTuple(), std::forward<Func>(f));  \
-    }                                                                                            \
-                                                                                                 \
-    template <typename Func>                                                                     \
-    constexpr void FieldByName(const char* name, Func&& f) {                                     \
-        ::struct_tags::VisitTupleByName(name, __StructTags_FieldTuple(), std::forward<Func>(f)); \
-    }                                                                                            \
-                                                                                                 \
-    template <typename Func>                                                                     \
-    constexpr void FieldForEach(Func&& f) {                                                      \
-        ::struct_tags::VisitTupleForEach(__StructTags_FieldTuple(), std::forward<Func>(f));      \
-    }                                                                                            \
-                                                                                                 \
-private:
-
-template <typename T>
-inline auto __StructTagsExternal_FieldTuple([[maybe_unused]] T&& s) {
-    return std::make_tuple();
-}
-
-#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_BEGIN(Struct)     \
-    /* NOLINTNEXTLINE(bugprone-macro-parentheses) */         \
-    inline auto __StructTagsExternal_FieldTuple(Struct* s) { \
-        using _Struct = Struct;                              \
-        return std::make_tuple(
+#define STRUCT_TAGS_DECLARE_BEGIN(Struct)                                                                \
+private:                                                                                                 \
+    friend class ::struct_tags::StructTags<Struct>;                                                      \
+    friend class ::struct_tags::has_struct_tags_entrance<Struct>;                                        \
+                                                                                                         \
+    template <typename Func>                                                                             \
+    static size_t __StructTags_Entrance(Struct* s, const ::struct_tags::Options& options, Func&& func) { \
+        using _Struct = Struct;                                                                          \
+        size_t size = 0;
 
 // https://stackoverflow.com/questions/2402579/function-pointer-to-member-function
-#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...)                   \
-    ::struct_tags::Field<std::decay_t<decltype(s->*(&_Struct::field))>>{ \
-            STRUCT_TAGS_STR(field), &(s->*(&_Struct::field)), std::map<std::string, std::string>{__VA_ARGS__}},
+#define STRUCT_TAGS_DECLARE_FIELD(field, ...)                                                  \
+    if (options.visit_field) {                                                                 \
+        ++size;                                                                                \
+                                                                                               \
+        const char* name = STRUCT_TAGS_STR(field);                                             \
+        static const auto tags = std::map<std::string, std::string>{__VA_ARGS__};              \
+        using field_type = std::decay_t<decltype(s->*(&_Struct::field))>;                      \
+        using field_struct_type = ::struct_tags::Field<field_type>;                            \
+                                                                                               \
+        if (options.visit_for_each || (options.visit_by_index && options.index == size - 1) || \
+                (options.visit_by_name && !strcmp(options.name, name))) {                      \
+            func(field_struct_type(name, &(s->field), tags));                                  \
+        }                                                                                      \
+    }
 
-#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD_END               \
-    ::struct_tags::Field<char> {                             \
-        ::struct_tags::Constant::kStructTagsEndFlag, nullptr \
-    });                                                      \
+#define STRUCT_TAGS_DECLARE_END                                                                            \
+                                                                                                           \
+    return size;                                                                                           \
+    }                                                                                                      \
+                                                                                                           \
+public:                                                                                                    \
+    size_t NumField() {                                                                                    \
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().Build();                    \
+        return __StructTags_Entrance(this, options, []([[maybe_unused]] auto&& field) {});                 \
+    }                                                                                                      \
+                                                                                                           \
+    template <typename Func>                                                                               \
+    void FieldByIndex(size_t ix, Func&& f) {                                                               \
+        static auto options =                                                                              \
+                ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByIndex().WithIndex(ix).Build(); \
+        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
+    }                                                                                                      \
+                                                                                                           \
+    template <typename Func>                                                                               \
+    void FieldByName(const char* name, Func&& f) {                                                         \
+        static auto options =                                                                              \
+                ::struct_tags::OptionsBuilder().WithVisitField().WithVisitByName().WithName(name).Build(); \
+        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
+    }                                                                                                      \
+                                                                                                           \
+    template <typename Func>                                                                               \
+    void FieldForEach(Func&& f) {                                                                          \
+        static auto options = ::struct_tags::OptionsBuilder().WithVisitField().WithVisitForEach().Build(); \
+        __StructTags_Entrance(this, options, std::forward<Func>(f));                                       \
+    }                                                                                                      \
+                                                                                                           \
+private:
+
+#define STRUCT_TAGS_EXTERNAL_DECLARE_BEGIN(Struct)                                                               \
+    template <typename Func> /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                                    \
+    inline size_t __StructTagsExternal_Entrance(Struct* s, const ::struct_tags::Options& options, Func&& func) { \
+        using _Struct = Struct;                                                                                  \
+        size_t size = 0;
+
+#define STRUCT_TAGS_EXTERNAL_DECLARE_FIELD(field, ...) STRUCT_TAGS_DECLARE_FIELD(field, ##__VA_ARGS__)
+
+#define STRUCT_TAGS_EXTERNAL_DECLARE_END \
+    return size;                         \
     }
 
 #endif  // STRUCT_TAGS_INTERNAL_MACROS_H

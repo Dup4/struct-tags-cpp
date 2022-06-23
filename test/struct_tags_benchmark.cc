@@ -30,7 +30,7 @@ struct A {
     int y{0};
     int z{0};
 
-    STRUCT_TAGS_DECLARE_FIELD_BEGIN(A)
+    STRUCT_TAGS_DECLARE_BEGIN(A)
     STRUCT_TAGS_DECLARE_FIELD(a, {"json", "_a"})
     STRUCT_TAGS_DECLARE_FIELD(b, {"json", "_b"})
     STRUCT_TAGS_DECLARE_FIELD(c, {"json", "_c"})
@@ -57,7 +57,7 @@ struct A {
     STRUCT_TAGS_DECLARE_FIELD(x, {"json", "_x"})
     STRUCT_TAGS_DECLARE_FIELD(y, {"json", "_y"})
     STRUCT_TAGS_DECLARE_FIELD(z, {"json", "_z"})
-    STRUCT_TAGS_DECLARE_FIELD_END
+    STRUCT_TAGS_DECLARE_END
 };
 
 static void BenchmarkStructTagsFieldForEachWithoutReflect(benchmark::State& state) {
@@ -96,6 +96,16 @@ static void BenchmarkStructTagsFieldForEachWithoutReflect(benchmark::State& stat
 }
 
 BENCHMARK(BenchmarkStructTagsFieldForEachWithoutReflect);
+
+static void BenchmarkStructTagsNumField(benchmark::State& state) {
+    for (auto _ : state) {
+        A a;
+
+        a.NumField();
+    }
+}
+
+BENCHMARK(BenchmarkStructTagsNumField);
 
 static void BenchmarkStructTagsFieldForEach(benchmark::State& state) {
     for (auto _ : state) {
