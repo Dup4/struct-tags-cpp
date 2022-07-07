@@ -13,7 +13,7 @@ private:
     template <typename U>
     static constexpr auto check(int)
             -> decltype(__StructTagsExternal_Entrance(std::declval<U*>(), std::declval<Options>(), nullptr),
-                    std::true_type());
+                        std::true_type());
 
     template <typename>
     static constexpr std::false_type check(...);

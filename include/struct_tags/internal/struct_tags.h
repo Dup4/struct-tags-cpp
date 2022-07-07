@@ -56,7 +56,8 @@ private:
         } else if constexpr (has_struct_tags_external_entrance_v<T>) {
             return __StructTagsExternal_Entrance(value_, options, std::forward<Func>(func));
         } else {
-            static_assert(false_v<T>,
+            static_assert(
+                    false_v<T>,
                     "T does not have T::__StructTags_Entrance() member function or __StructTagsExternal_Entrance() external function");
         }
     }
